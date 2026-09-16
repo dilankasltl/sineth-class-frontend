@@ -233,7 +233,7 @@ export default function AuthPage({ onLoginSuccess }) {
               <input
                 type="text"
                 required
-                placeholder="admin"
+                placeholder=""
                 className="glass-input"
                 value={loginId}
                 onChange={(e) => setLoginId(e.target.value)}
@@ -247,7 +247,7 @@ export default function AuthPage({ onLoginSuccess }) {
               <input
                 type="password"
                 required
-                placeholder="••••••••"
+                placeholder=""
                 className="glass-input"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
