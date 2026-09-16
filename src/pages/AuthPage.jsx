@@ -259,7 +259,7 @@ export default function AuthPage({ onLoginSuccess }) {
             </button>
 
             <div style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '0.5rem' }}>
-              Default Admin: <strong></strong> | Password: <strong></strong>
+              <strong></strong>  <strong></strong>
             </div>
           </form>
         )}
