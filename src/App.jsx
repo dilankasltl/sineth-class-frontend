@@ -4,6 +4,8 @@ import AuthPage from './pages/AuthPage';
 import AdminDashboard from './pages/AdminDashboard';
 import StudentDashboard from './pages/StudentDashboard';
 
+import FloatingContactButtons from './components/FloatingContactButtons';
+
 export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -53,6 +55,9 @@ export default function App() {
           <StudentDashboard user={user} />
         )}
       </main>
+
+      {/* Floating WhatsApp & Call Buttons (Only when logged in) */}
+      {user && <FloatingContactButtons />}
     </div>
   );
 }

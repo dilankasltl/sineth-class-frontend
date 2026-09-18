@@ -4,7 +4,7 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend 
 } from 'recharts';
 import { 
-  TrendingUp, Award, BookOpen, Video, Lock, CheckCircle2, PlayCircle, Image as ImageIcon, Eye, Building2, Sparkles, Sigma, Compass, Layers 
+  TrendingUp, Award, BookOpen, Video, Lock, Unlock, MessageCircle, CheckCircle2, PlayCircle, Image as ImageIcon, Eye, Building2, Sparkles, Sigma, Compass, Layers 
 } from 'lucide-react';
 
 export default function StudentDashboard({ user }) {
@@ -496,32 +496,76 @@ export default function StudentDashboard({ user }) {
             <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>No study videos or photo notes published for this playlist.</div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
-              {mediaList.map((item) => (
-                <div key={item._id} className="glass-card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
-                      <span className={`badge ${item.type === 'video' ? 'badge-primary' : 'badge-success'}`}>
-                        {item.type === 'video' ? 'VIDEO LECTURE' : 'PHOTO NOTE'}
-                      </span>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{item.playlistName}</span>
+              {mediaList.map((item) => {
+                const targetUrl = item.mediaSource === 'file' ? item.fileUrl : item.url;
+                const batchText = user.alYear ? `${user.alYear} A/L` : 'N/A';
+                const whatsappMsg = `Hi, I am ${user.firstName} (Student ID: ${user.studentId}, Batch: ${batchText}). Requesting access for video "${item.title}" (Amount: Rs. ${item.price}). request the account number to paid`;
+                const whatsappLink = `https://wa.me/94713126258?text=${encodeURIComponent(whatsappMsg)}`;
+
+                return (
+                  <div key={item._id} className="glass-card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative' }}>
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                        <span className={`badge ${item.type === 'video' ? 'badge-primary' : 'badge-success'}`}>
+                          {item.type === 'video' ? 'VIDEO LECTURE' : 'PHOTO NOTE'}
+                        </span>
+
+                        {item.isPaid ? (
+                          item.hasAccess ? (
+                            <span style={{ background: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#6ee7b7', padding: '0.2rem 0.6rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                              <Unlock size={12} /> UNLOCKED
+                            </span>
+                          ) : (
+                            <span style={{ background: 'rgba(236, 72, 153, 0.2)', border: '1px solid rgba(236, 72, 153, 0.4)', color: '#f472b6', padding: '0.2rem 0.6rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                              <Lock size={12} /> PAID (Rs. {item.price})
+                            </span>
+                          )
+                        ) : (
+                          <span style={{ background: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#6ee7b7', padding: '0.2rem 0.6rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                            <Unlock size={12} /> FREE
+                          </span>
+                        )}
+                      </div>
+
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginBottom: '0.3rem' }}>{item.playlistName}</div>
+                      <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '0.5rem', color: '#ffffff' }}>{item.title}</h4>
+                      <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>{item.description || 'Class material.'}</p>
                     </div>
 
-                    <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '0.5rem' }}>{item.title}</h4>
-                    <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>{item.description || 'Class material.'}</p>
+                    {item.hasAccess ? (
+                      <a
+                        href={targetUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn-primary"
+                        style={{ width: '100%', textDecoration: 'none', background: item.type === 'video' ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
+                      >
+                        {item.type === 'video' ? <PlayCircle size={18} /> : <Eye size={18} />}
+                        <span>{item.type === 'video' ? 'Watch Lecture' : 'View Photo Note'}</span>
+                      </a>
+                    ) : (
+                      <a
+                        href={whatsappLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn-primary"
+                        style={{
+                          width: '100%',
+                          textDecoration: 'none',
+                          background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                          boxShadow: '0 4px 14px rgba(34, 197, 94, 0.4)',
+                          color: '#ffffff',
+                          fontWeight: 800,
+                          fontSize: '0.9rem'
+                        }}
+                      >
+                        <MessageCircle size={18} />
+                        <span>PAID (Rs. {item.price}) - Request on WhatsApp</span>
+                      </a>
+                    )}
                   </div>
-
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn-primary"
-                    style={{ width: '100%', textDecoration: 'none', background: item.type === 'video' ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
-                  >
-                    {item.type === 'video' ? <PlayCircle size={18} /> : <Eye size={18} />}
-                    <span>{item.type === 'video' ? 'Watch Lecture' : 'View Photo Note'}</span>
-                  </a>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
