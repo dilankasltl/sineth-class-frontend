@@ -253,3 +253,113 @@ body {
   animation: pulseBlinkCall 2.2s infinite ease-in-out;
 }
 
+/* ========================================================= */
+/* COMPREHENSIVE MOBILE & TABLET RESPONSIVE STYLES */
+/* ========================================================= */
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 12px;
+}
+
+/* Mobile Breakpoints (Under 768px) */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .glass-card {
+    padding: 1.25rem 1rem !important;
+    border-radius: 12px;
+  }
+
+  .glass-input, select.glass-input, input.glass-input {
+    font-size: 16px !important; /* Prevents auto-zoom on iOS safari */
+    padding: 0.65rem 0.85rem;
+  }
+
+  .btn-primary, .btn-secondary, .btn-danger {
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  header.glass-card {
+    padding: 0.75rem 1rem !important;
+    border-radius: 0 0 12px 12px !important;
+  }
+
+  header.glass-card > div {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.85rem;
+  }
+
+  header.glass-card > div > div:last-child {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .custom-table th, .custom-table td {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  .floating-contact-container {
+    bottom: 1.25rem !important;
+    right: 1rem !important;
+    gap: 0.6rem !important;
+  }
+
+  .floating-whatsapp-btn, .floating-call-btn {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  .floating-whatsapp-btn svg, .floating-call-btn svg {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .mobile-stack {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+  }
+
+  .responsive-grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .mobile-full-width {
+    width: 100% !important;
+  }
+}
+
+/* Small Mobile Devices (Under 480px) */
+@media (max-width: 480px) {
+  .glass-card {
+    padding: 1rem 0.75rem !important;
+  }
+
+  h1 { font-size: 1.25rem !important; }
+  h2 { font-size: 1.15rem !important; }
+  h3 { font-size: 1.05rem !important; }
+  h4 { font-size: 0.95rem !important; }
+
+  .badge {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+  }
+}
+

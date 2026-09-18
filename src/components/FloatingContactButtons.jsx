@@ -8,6 +8,7 @@ export default function FloatingContactButtons() {
 
   return (
     <div
+      className="floating-contact-container"
       style={{
         position: 'fixed',
         bottom: '2rem',

@@ -252,7 +252,7 @@ export default function StudentDashboard({ user }) {
     <div style={{ maxWidth: '1300px', margin: '0 auto', padding: '0 1rem 3rem' }}>
       
       {/* Top Student Navigation Tabs */}
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
+      <div className="mobile-stack" style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
         <button
           onClick={() => setActiveTab('performance')}
           className="glass-card"
