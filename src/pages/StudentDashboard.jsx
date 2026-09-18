@@ -4,12 +4,15 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend 
 } from 'recharts';
 import { 
-  TrendingUp, Award, BookOpen, Video, Lock, Unlock, MessageCircle, CheckCircle2, PlayCircle, Image as ImageIcon, Eye, Building2, Sparkles, Sigma, Compass, Layers 
+  TrendingUp, Award, BookOpen, Video, Lock, Unlock, MessageCircle, CheckCircle2, PlayCircle, Image as ImageIcon, Eye, Building2, Sparkles, Sigma, Compass, Layers, Trophy, Crown 
 } from 'lucide-react';
 
 export default function StudentDashboard({ user }) {
   const [activeTab, setActiveTab] = useState('performance'); // 'performance', 'class-marks', 'media'
   const [perfSubTab, setPerfSubTab] = useState('pure'); // 'pure', 'applied', 'combined'
+
+  // --- BATCH TOPPERS STATE ---
+  const [batchToppersData, setBatchToppersData] = useState(null);
 
   // --- TAB 1: PERFORMANCE STATES ---
   const [perfData, setPerfData] = useState(null);
@@ -80,12 +83,32 @@ export default function StudentDashboard({ user }) {
     }
   };
 
+  const fetchBatchToppers = async (year) => {
+    try {
+      const targetYear = year || selectedBatch || (user.alYear ? String(user.alYear) : '2028');
+      const res = await API.get(`/marks/batch-toppers?alYear=${targetYear}`);
+      setBatchToppersData(res.data);
+    } catch (err) {
+      console.error('Error fetching batch toppers:', err);
+    }
+  };
+
   useEffect(() => {
-    if (activeTab === 'performance') fetchMyPerformance();
+    const defaultYear = user.alYear ? String(user.alYear) : '2028';
+    fetchBatchToppers(defaultYear);
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'performance') {
+      fetchMyPerformance();
+    }
   }, [activeTab]);
 
   useEffect(() => {
-    if (activeTab === 'class-marks') fetchBatchExams();
+    if (activeTab === 'class-marks') {
+      fetchBatchExams();
+      fetchBatchToppers(selectedBatch);
+    }
   }, [activeTab, selectedBatch]);
 
   useEffect(() => {
@@ -95,6 +118,126 @@ export default function StudentDashboard({ user }) {
   useEffect(() => {
     if (activeTab === 'media') fetchMediaLibrary();
   }, [activeTab, selectedPlaylist]);
+
+  const renderBatchToppersCard = (targetBatch) => {
+    const yearStr = String(targetBatch || (user.alYear ? String(user.alYear) : '2028'));
+    let currentBatchToppers = [];
+
+    if (batchToppersData) {
+      if (batchToppersData.toppers && String(batchToppersData.alYear) === yearStr) {
+        currentBatchToppers = batchToppersData.toppers;
+      } else if (batchToppersData.toppersByBatch && batchToppersData.toppersByBatch[yearStr]) {
+        currentBatchToppers = batchToppersData.toppersByBatch[yearStr];
+      } else if (batchToppersData[yearStr]) {
+        currentBatchToppers = batchToppersData[yearStr];
+      }
+    }
+
+    if (!currentBatchToppers || currentBatchToppers.length === 0) {
+      return null;
+    }
+
+    const topOne = currentBatchToppers[0];
+    const runnersUp = currentBatchToppers.slice(1, 3);
+
+    return (
+      <div style={{ 
+        background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(217, 119, 6, 0.08) 100%)', 
+        border: '1px solid rgba(245, 158, 11, 0.35)', 
+        borderRadius: '16px', 
+        padding: '1.25rem 1.5rem', 
+        marginBottom: '1.5rem' 
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <div style={{ background: 'rgba(245, 158, 11, 0.25)', padding: '0.5rem', borderRadius: '10px' }}>
+              <Trophy size={22} color="#fcd34d" />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fef08a' }}>Batch Top Performers (Highest Average)</h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Highest scoring overall student for {yearStr} A/L Batch</p>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {/* #1 TOPPER HIGHLIGHT CARD */}
+          <div style={{
+            background: 'rgba(15, 23, 42, 0.9)',
+            border: '2px solid #f59e0b',
+            borderRadius: '14px',
+            padding: '1.25rem 1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justify: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1rem',
+            boxShadow: '0 8px 24px rgba(245, 158, 11, 0.15)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                color: '#000000',
+                width: '50px',
+                height: '50px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justify: 'center',
+                fontWeight: 900,
+                boxShadow: '0 4px 14px rgba(245, 158, 11, 0.45)'
+              }}>
+                <Crown size={26} color="#000000" />
+              </div>
+
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span className="badge badge-warning" style={{ fontSize: '0.7rem', padding: '0.2rem 0.6rem' }}>#1 HIGHEST AVERAGE SCORE</span>
+                  <span style={{ fontSize: '0.75rem', color: '#fcd34d', fontWeight: 800 }}>{topOne.student.alYear} A/L BATCH</span>
+                </div>
+                <h4 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#ffffff', marginTop: '0.2rem' }}>
+                  {topOne.student.firstName} {topOne.student.lastName}
+                </h4>
+                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', gap: '1.2rem', marginTop: '0.25rem' }}>
+                  <span>Student ID: <strong style={{ color: '#818cf8', fontSize: '0.95rem' }}>{topOne.student.studentId}</strong></span>
+                  <span>School: <strong style={{ color: '#67e8f9' }}>{topOne.student.school || 'N/A'}</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ textAlign: 'right', background: 'rgba(16, 185, 129, 0.12)', padding: '0.6rem 1.25rem', borderRadius: '12px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+              <div style={{ fontSize: '1.85rem', fontWeight: 900, color: '#6ee7b7', lineHeight: 1.1 }}>
+                {topOne.overallAverage}%
+              </div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700, marginTop: '0.2rem' }}>
+                Highest Paper Average
+              </div>
+            </div>
+          </div>
+
+          {/* RUNNERS UP (#2 & #3) IF AVAILABLE */}
+          {runnersUp.length > 0 && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem', marginTop: '0.2rem' }}>
+              {runnersUp.map((st, idx) => (
+                <div key={st.student.studentId || idx} style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid var(--border-glass)', padding: '0.75rem 1rem', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <span style={{ fontSize: '0.7rem', fontWeight: 800, color: idx === 0 ? '#cbd5e1' : '#b45309' }}>
+                      #{idx + 2} TOPPER
+                    </span>
+                    <div style={{ fontWeight: 700, color: '#ffffff', fontSize: '0.95rem' }}>{st.student.firstName} {st.student.lastName}</div>
+                    <div style={{ fontSize: '0.75rem', color: '#818cf8', fontWeight: 700 }}>ID: {st.student.studentId}</div>
+                  </div>
+                  <div style={{ fontWeight: 900, color: '#38bdf8', fontSize: '1.2rem' }}>
+                    {st.overallAverage}%
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   const getCurrentPerfObject = () => {
     if (!perfData) return null;
@@ -401,6 +544,8 @@ export default function StudentDashboard({ user }) {
               </select>
             </div>
           </div>
+
+          {renderBatchToppersCard(selectedBatch)}
 
           {loadingMarks ? (
             <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>Loading results...</div>
